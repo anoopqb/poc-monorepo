@@ -1,0 +1,19 @@
+{
+    "name": "poc-monorepo-app",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "build": "turbo run build",
+        "dev": "turbo run dev",
+        "lint": "turbo run lint",
+        "clean": "turbo run clean"
+    },
+    "devDependencies": {
+        "turbo": "^2.0.0",
+        "typescript": "^5.3.0"
+    },
+    "workspaces": [
+        "apps/*"
+    ],
+    "packageManager": "npm@9.0.0"
+}
