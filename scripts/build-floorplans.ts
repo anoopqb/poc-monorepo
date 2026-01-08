@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { spawn } from 'child_process';
 import { join } from 'path';
 import { existsSync, mkdirSync, rmSync, cpSync, readFileSync, writeFileSync, copyFileSync } from 'fs';
 import crypto from 'crypto';
@@ -26,6 +26,8 @@ interface FloorplanData {
     beds: number;
     baths: number;
     sqft: number;
+    price: number;
+    availableDate: string | null;
   }>;
   lastUpdated?: string;
 }
@@ -47,6 +49,7 @@ const DATA_DIR = join(ROOT_DIR, 'data');
 const DATA_FILE = join(DATA_DIR, 'floorplans-data.json');
 const CACHE_FILE = join(DATA_DIR, '.build-cache.json');
 const THEMES_DIR = join(ROOT_DIR, 'data/themes');
+const TEMP_DIR = join(ROOT_DIR, '.build-temp');
 
 // Generate hash of floorplan data for comparison
 function hashData(data: unknown): string {
@@ -79,35 +82,68 @@ function hasChanged(siteId: string, newData: FloorplanData, cache: BuildCache): 
   const cachedHash = cache[siteId]?.floorplansHash;
 
   if (!cachedHash) {
-    console.log(`   ℹ️  No previous build found for ${siteId}`);
+    console.log(`[${siteId}] ℹ️  No previous build found`);
     return true;
   }
 
   if (newHash !== cachedHash) {
-    console.log(`   🔄 Data changed for ${siteId}`);
-    console.log(`      Previous: ${cachedHash.substring(0, 8)}...`);
-    console.log(`      Current:  ${newHash.substring(0, 8)}...`);
+    console.log(`[${siteId}] 🔄 Data changed (${cachedHash.substring(0, 8)}... → ${newHash.substring(0, 8)}...)`);
     return true;
   }
 
-  console.log(`   ✓ No changes for ${siteId} (hash: ${newHash.substring(0, 8)}...)`);
+  console.log(`[${siteId}] ✓ No changes (hash: ${newHash.substring(0, 8)}...)`);
   return false;
 }
 
-// Copy site-specific theme CSS to template
-function copyThemeFile(siteId: string): void {
+// Clone template to isolated temp directory for parallel builds
+function cloneTemplate(siteId: string): string {
+  const sourceDir = join(PACKAGES_DIR, 'floorplans-template');
+  const tempDir = join(TEMP_DIR, `fp-${siteId}`, 'floorplans-template');
+
+  // Clean and create temp directory
+  if (existsSync(tempDir)) {
+    rmSync(tempDir, { recursive: true, force: true });
+  }
+  mkdirSync(tempDir, { recursive: true });
+
+  // Copy template files (excluding node_modules, .next, out)
+  const excludeDirs = ['node_modules', '.next', 'out'];
+  
+  cpSync(sourceDir, tempDir, {
+    recursive: true,
+    filter: (src) => {
+      const relativePath = src.replace(sourceDir, '');
+      return !excludeDirs.some(dir => relativePath.includes(`/${dir}`) || relativePath.includes(`\\${dir}`));
+    },
+  });
+
+  // Symlink node_modules from original template (faster than copying)
+  const sourceNodeModules = join(sourceDir, 'node_modules');
+  const tempNodeModules = join(tempDir, 'node_modules');
+  if (existsSync(sourceNodeModules)) {
+    try {
+      require('fs').symlinkSync(sourceNodeModules, tempNodeModules, 'junction');
+    } catch {
+      // Fallback: copy if symlink fails
+      cpSync(sourceNodeModules, tempNodeModules, { recursive: true });
+    }
+  }
+
+  return tempDir;
+}
+
+// Copy site-specific theme CSS to temp template directory
+function copyThemeFileToTemp(siteId: string, tempTemplateDir: string): void {
   const siteTheme = join(THEMES_DIR, `${siteId}.css`);
   const defaultTheme = join(THEMES_DIR, '_default.css');
-  const destPath = join(PACKAGES_DIR, 'floorplans-template', 'app/theme.css');
+  const destPath = join(tempTemplateDir, 'app/theme.css');
 
   const sourceTheme = existsSync(siteTheme) ? siteTheme : defaultTheme;
 
   if (existsSync(sourceTheme)) {
     copyFileSync(sourceTheme, destPath);
-    console.log(`   📎 Theme: ${sourceTheme.replace(ROOT_DIR, '')}`);
   } else {
     writeFileSync(destPath, '/* No theme overrides */\n');
-    console.log(`   📎 Theme: (none)`);
   }
 }
 
@@ -123,6 +159,47 @@ function getBrandEnv(brand?: BrandConfig): Record<string, string> {
     BRAND_HEADER_TEXT: brand.headerText,
     BRAND_FONT_FAMILY: brand.fontFamily,
   };
+}
+
+// Async build using spawn
+function buildTemplateAsync(templateDir: string, env: NodeJS.ProcessEnv, siteId: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const outDir = join(templateDir, 'out');
+
+    // Clean previous output
+    if (existsSync(outDir)) {
+      rmSync(outDir, { recursive: true, force: true });
+    }
+
+    // Run Next.js build
+    const child = spawn('npm', ['run', 'build'], {
+      cwd: templateDir,
+      env,
+      shell: true,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+
+    let stderr = '';
+
+    child.stderr?.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    child.on('close', (code) => {
+      if (code === 0) {
+        console.log(`[${siteId}] ✅ Build completed`);
+        resolve();
+      } else {
+        console.error(`[${siteId}] ❌ Build failed`);
+        if (stderr) console.error(stderr);
+        reject(new Error(`Build failed for ${siteId} with code ${code}`));
+      }
+    });
+
+    child.on('error', (err) => {
+      reject(err);
+    });
+  });
 }
 
 // Get concurrency from CLI args or env
@@ -165,29 +242,40 @@ async function processBatches<T, R>(
   for (let i = 0; i < batches.length; i++) {
     const batch = batches[i];
     if (batches.length > 1) {
-      console.log(`\n📦 Batch ${i + 1}/${batches.length} (${batch.length} sites in parallel)\n`);
+      console.log(`\n${'─'.repeat(60)}`);
+      console.log(`📦 Batch ${i + 1}/${batches.length} (${batch.length} sites in parallel)`);
+      console.log(`${'─'.repeat(60)}\n`);
     }
 
-    const batchResults = await Promise.all(batch.map(processor));
-    results.push(...batchResults);
+    const batchResults = await Promise.allSettled(batch.map(processor));
+    batchResults.forEach((result) => {
+      if (result.status === 'fulfilled') {
+        results.push(result.value);
+      } else {
+        console.error(`   ❌ ${result.reason}`);
+        results.push(false as R);
+      }
+    });
   }
 
   return results;
 }
 
 export async function buildFloorplans(siteId: string, force = false): Promise<boolean> {
+  const startTime = Date.now();
+
   // Load site config
   const sitesConfig = require('../sites.config.json');
   const site = sitesConfig.sites.find((s: SiteConfig) => s.id === siteId);
 
   if (!site) {
-    console.error(`❌ Site "${siteId}" not found in sites.config.json`);
+    console.error(`[${siteId}] ❌ Site not found in sites.config.json`);
     return false;
   }
 
   // Check if floorplans data exists
   if (!existsSync(DATA_FILE)) {
-    console.error(`❌ Floorplans data file not found: ${DATA_FILE}`);
+    console.error(`[${siteId}] ❌ Floorplans data file not found`);
     return false;
   }
 
@@ -195,7 +283,7 @@ export async function buildFloorplans(siteId: string, force = false): Promise<bo
   const siteData: FloorplanData = allFloorplansData[siteId];
 
   if (!siteData) {
-    console.error(`❌ No floorplans data found for site "${siteId}"`);
+    console.error(`[${siteId}] ❌ No floorplans data found`);
     return false;
   }
 
@@ -206,65 +294,60 @@ export async function buildFloorplans(siteId: string, force = false): Promise<bo
     return false; // No rebuild needed
   }
 
-  console.log(`\n${'='.repeat(60)}`);
-  console.log(`🏗️  Building floorplans for: ${site.name} (${siteId})`);
-  console.log(`   Floorplans: ${siteData.floorplans.length}`);
-  console.log(`${'='.repeat(60)}\n`);
+  console.log(`[${siteId}] 🏗️  Building floorplans (${siteData.floorplans.length} plans)`);
 
   const siteOutputDir = join(DIST_DIR, siteId);
   const floorplansDestDir = join(siteOutputDir, 'floorplans');
+  const siteTempDir = join(TEMP_DIR, `fp-${siteId}`);
 
   // Check if website exists (must build website first)
   if (!existsSync(join(siteOutputDir, 'index.html'))) {
-    console.error(`❌ Website not found at ${siteOutputDir}`);
-    console.error(`   Run "npm run build:site ${siteId}" first to build the full site.`);
+    console.error(`[${siteId}] ❌ Website not found. Run "npm run build:site ${siteId}" first.`);
     return false;
   }
 
-  // Copy theme file
-  copyThemeFile(siteId);
+  try {
+    // Clone template to isolated directory
+    console.log(`[${siteId}] 📦 Cloning template...`);
+    const tempTemplateDir = cloneTemplate(siteId);
+    copyThemeFileToTemp(siteId, tempTemplateDir);
 
-  // Build floorplans template
-  const templateDir = join(PACKAGES_DIR, 'floorplans-template');
-  const outDir = join(templateDir, 'out');
+    const env: NodeJS.ProcessEnv = {
+      ...process.env,
+      SITE_ID: site.id,
+      SITE_NAME: site.name,
+      SITE_BASE_PATH: site.basePath,
+      FLOORPLANS_DATA: JSON.stringify(siteData.floorplans),
+      ...getBrandEnv(site.brand),
+    };
 
-  // Clean previous output
-  if (existsSync(outDir)) {
-    rmSync(outDir, { recursive: true, force: true });
+    console.log(`[${siteId}] 🔨 Building...`);
+    await buildTemplateAsync(tempTemplateDir, env, siteId);
+
+    // Remove existing floorplans folder and replace with new build
+    if (existsSync(floorplansDestDir)) {
+      rmSync(floorplansDestDir, { recursive: true, force: true });
+    }
+    mkdirSync(floorplansDestDir, { recursive: true });
+    cpSync(join(tempTemplateDir, 'out'), floorplansDestDir, { recursive: true });
+
+    // Update cache with new hash
+    cache[siteId] = {
+      floorplansHash: hashData(siteData.floorplans),
+      lastBuilt: new Date().toISOString(),
+    };
+    saveBuildCache(cache);
+
+    const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+    console.log(`[${siteId}] 🎉 Complete in ${duration}s → ${floorplansDestDir}`);
+    return true;
+
+  } finally {
+    // Clean up temp directory for this site
+    if (existsSync(siteTempDir)) {
+      rmSync(siteTempDir, { recursive: true, force: true });
+    }
   }
-
-  const env: NodeJS.ProcessEnv = {
-    ...process.env,
-    SITE_ID: site.id,
-    SITE_NAME: site.name,
-    SITE_BASE_PATH: site.basePath,
-    FLOORPLANS_DATA: JSON.stringify(siteData.floorplans),
-    ...getBrandEnv(site.brand),
-  };
-
-  console.log(`📦 Building floorplans template...`);
-  execSync('npm run build', {
-    cwd: templateDir,
-    env,
-    stdio: 'inherit',
-  });
-
-  // Remove existing floorplans folder and replace with new build
-  if (existsSync(floorplansDestDir)) {
-    rmSync(floorplansDestDir, { recursive: true, force: true });
-  }
-  mkdirSync(floorplansDestDir, { recursive: true });
-  cpSync(outDir, floorplansDestDir, { recursive: true });
-
-  // Update cache with new hash
-  cache[siteId] = {
-    floorplansHash: hashData(siteData.floorplans),
-    lastBuilt: new Date().toISOString(),
-  };
-  saveBuildCache(cache);
-
-  console.log(`\n✅ Floorplans updated at ${floorplansDestDir}`);
-  return true;
 }
 
 export async function buildAllFloorplans(force = false, concurrency?: number): Promise<void> {
@@ -278,26 +361,38 @@ export async function buildAllFloorplans(force = false, concurrency?: number): P
   const actualConcurrency = concurrency || getConcurrency();
 
   console.log(`\n${'='.repeat(60)}`);
-  console.log(`🔍 Checking ${siteIds.length} sites for changes`);
+  console.log(`🚀 PARALLEL FLOORPLANS BUILD: ${siteIds.length} sites`);
   console.log(`   Concurrency: ${actualConcurrency} parallel builds`);
   console.log(`${'='.repeat(60)}\n`);
+
+  // Clean temp directory before starting
+  if (existsSync(TEMP_DIR)) {
+    rmSync(TEMP_DIR, { recursive: true, force: true });
+  }
 
   const startTime = Date.now();
 
   const results = await processBatches(siteIds, actualConcurrency, async (siteId) => {
-    const wasRebuilt = await buildFloorplans(siteId, force);
-    return wasRebuilt;
+    return await buildFloorplans(siteId, force);
   });
+
+  // Clean up temp directory after all builds
+  if (existsSync(TEMP_DIR)) {
+    rmSync(TEMP_DIR, { recursive: true, force: true });
+  }
 
   const rebuiltCount = results.filter(Boolean).length;
   const skippedCount = results.filter((r) => !r).length;
 
   const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+  
   console.log(`\n${'='.repeat(60)}`);
-  console.log(`📊 Summary (${duration}s):`);
-  console.log(`   Rebuilt: ${rebuiltCount} sites`);
-  console.log(`   Skipped: ${skippedCount} sites (no changes)`);
-  console.log(`   Concurrency: ${actualConcurrency} parallel builds`);
+  console.log(`📊 BUILD SUMMARY`);
+  console.log(`${'='.repeat(60)}`);
+  console.log(`   ✅ Rebuilt: ${rebuiltCount} sites`);
+  console.log(`   ⏭️  Skipped: ${skippedCount} sites (no changes)`);
+  console.log(`   ⏱️  Total time: ${duration}s`);
+  console.log(`   🔀 Concurrency: ${actualConcurrency} parallel builds`);
   console.log(`${'='.repeat(60)}\n`);
 }
 

@@ -59,8 +59,15 @@ main > p {
 
 .floorplan-card h2 {
   font-size: 1.25rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   color: var(--brand-primary, #333);
+}
+
+.floorplan-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--brand-primary, #333);
+  margin-bottom: 1rem;
 }
 
 .floorplan-details {
@@ -68,10 +75,35 @@ main > p {
   gap: 1rem;
   color: #666;
   font-size: 0.9rem;
+  margin-bottom: 1rem;
 }
 
 .floorplan-details span {
   background: #f0f0f0;
   padding: 0.25rem 0.75rem;
   border-radius: 4px;
+}
+
+.floorplan-availability {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+
+.floorplan-availability.available-now {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+
+.floorplan-availability.available-later {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+}
+
+.availability-dot {
+  font-size: 0.75rem;
 }
