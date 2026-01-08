@@ -110,8 +110,15 @@ npm install
 # Build a single site (website + floorplans)
 npm run build:site property-001
 
-# Build all sites defined in sites.config.json
+# Build all sites defined in sites.config.json (2 parallel by default)
 npm run build:all
+
+# Build with custom concurrency (e.g., 4 parallel builds)
+npm run build:all -- --concurrency 4
+npm run build:all -- -c 4
+
+# Or set via environment variable
+CONCURRENCY=4 npm run build:all
 ```
 
 ### Incremental Floorplans Builds
@@ -122,12 +129,34 @@ For hourly updates when only floorplan data changes:
 # Build floorplans for a single site (with change detection)
 npm run build:floorplans property-001
 
-# Build floorplans for all sites (only changed ones)
+# Build floorplans for all sites (only changed ones, 2 parallel by default)
 npm run build:floorplans:all
+
+# Build with custom concurrency
+npm run build:floorplans:all -- --concurrency 4
 
 # Force rebuild even if no changes detected
 npm run build:floorplans property-001 -- --force
 ```
+
+### Parallel Builds
+
+Both `build:all` and `build:floorplans:all` support parallel execution:
+
+| Flag | Description |
+|------|-------------|
+| `--concurrency N` or `-c N` | Number of parallel builds (default: 2) |
+| `CONCURRENCY` env var | Alternative way to set concurrency |
+
+**Performance estimate** (10 sites, ~30s each):
+
+| Concurrency | Time |
+|-------------|------|
+| 1 (sequential) | ~5 min |
+| 2 (default) | ~2.5 min |
+| 4 | ~1.25 min |
+
+**Note**: Higher concurrency uses more CPU/memory. Start with 2-4 and adjust based on your machine.
 
 ### Watch Mode (Auto-Build on Changes)
 

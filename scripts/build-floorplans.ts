@@ -37,6 +37,9 @@ interface BuildCache {
   };
 }
 
+// Default concurrency - number of parallel builds
+const DEFAULT_CONCURRENCY = 2;
+
 const ROOT_DIR = join(__dirname, '..');
 const PACKAGES_DIR = join(ROOT_DIR, 'packages');
 const DIST_DIR = join(ROOT_DIR, 'dist');
@@ -120,6 +123,56 @@ function getBrandEnv(brand?: BrandConfig): Record<string, string> {
     BRAND_HEADER_TEXT: brand.headerText,
     BRAND_FONT_FAMILY: brand.fontFamily,
   };
+}
+
+// Get concurrency from CLI args or env
+function getConcurrency(): number {
+  const args = process.argv.slice(2);
+
+  for (let i = 0; i < args.length; i++) {
+    if ((args[i] === '--concurrency' || args[i] === '-c') && args[i + 1]) {
+      const value = parseInt(args[i + 1], 10);
+      if (!isNaN(value) && value > 0) return value;
+    }
+    if (args[i].startsWith('--concurrency=')) {
+      const value = parseInt(args[i].split('=')[1], 10);
+      if (!isNaN(value) && value > 0) return value;
+    }
+  }
+
+  const envValue = process.env.CONCURRENCY;
+  if (envValue) {
+    const value = parseInt(envValue, 10);
+    if (!isNaN(value) && value > 0) return value;
+  }
+
+  return DEFAULT_CONCURRENCY;
+}
+
+// Process items in batches with limited concurrency
+async function processBatches<T, R>(
+  items: T[],
+  concurrency: number,
+  processor: (item: T) => Promise<R>
+): Promise<R[]> {
+  const results: R[] = [];
+  const batches: T[][] = [];
+
+  for (let i = 0; i < items.length; i += concurrency) {
+    batches.push(items.slice(i, i + concurrency));
+  }
+
+  for (let i = 0; i < batches.length; i++) {
+    const batch = batches[i];
+    if (batches.length > 1) {
+      console.log(`\n📦 Batch ${i + 1}/${batches.length} (${batch.length} sites in parallel)\n`);
+    }
+
+    const batchResults = await Promise.all(batch.map(processor));
+    results.push(...batchResults);
+  }
+
+  return results;
 }
 
 export async function buildFloorplans(siteId: string, force = false): Promise<boolean> {
@@ -214,7 +267,7 @@ export async function buildFloorplans(siteId: string, force = false): Promise<bo
   return true;
 }
 
-export async function buildAllFloorplans(force = false): Promise<void> {
+export async function buildAllFloorplans(force = false, concurrency?: number): Promise<void> {
   if (!existsSync(DATA_FILE)) {
     console.error(`❌ Floorplans data file not found: ${DATA_FILE}`);
     process.exit(1);
@@ -222,25 +275,29 @@ export async function buildAllFloorplans(force = false): Promise<void> {
 
   const floorplansData = JSON.parse(readFileSync(DATA_FILE, 'utf-8'));
   const siteIds = Object.keys(floorplansData);
-
-  console.log(`\n🔍 Checking ${siteIds.length} sites for changes...\n`);
-
-  let rebuiltCount = 0;
-  let skippedCount = 0;
-
-  for (const siteId of siteIds) {
-    const wasRebuilt = await buildFloorplans(siteId, force);
-    if (wasRebuilt) {
-      rebuiltCount++;
-    } else {
-      skippedCount++;
-    }
-  }
+  const actualConcurrency = concurrency || getConcurrency();
 
   console.log(`\n${'='.repeat(60)}`);
-  console.log(`📊 Summary:`);
+  console.log(`🔍 Checking ${siteIds.length} sites for changes`);
+  console.log(`   Concurrency: ${actualConcurrency} parallel builds`);
+  console.log(`${'='.repeat(60)}\n`);
+
+  const startTime = Date.now();
+
+  const results = await processBatches(siteIds, actualConcurrency, async (siteId) => {
+    const wasRebuilt = await buildFloorplans(siteId, force);
+    return wasRebuilt;
+  });
+
+  const rebuiltCount = results.filter(Boolean).length;
+  const skippedCount = results.filter((r) => !r).length;
+
+  const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+  console.log(`\n${'='.repeat(60)}`);
+  console.log(`📊 Summary (${duration}s):`);
   console.log(`   Rebuilt: ${rebuiltCount} sites`);
   console.log(`   Skipped: ${skippedCount} sites (no changes)`);
+  console.log(`   Concurrency: ${actualConcurrency} parallel builds`);
   console.log(`${'='.repeat(60)}\n`);
 }
 
@@ -248,15 +305,17 @@ export async function buildAllFloorplans(force = false): Promise<void> {
 if (require.main === module) {
   const args = process.argv.slice(2);
   const force = args.includes('--force');
-  const siteId = args.find((arg) => !arg.startsWith('--'));
+  const siteId = args.find((arg) => !arg.startsWith('--') && !arg.startsWith('-'));
 
   if (!siteId && !args.includes('--all')) {
     console.error('Usage: npx ts-node scripts/build-floorplans.ts <site-id> [--force]');
-    console.error('       npx ts-node scripts/build-floorplans.ts --all [--force]');
+    console.error('       npx ts-node scripts/build-floorplans.ts --all [--force] [--concurrency N]');
     console.error('');
     console.error('Options:');
-    console.error('  --force    Rebuild even if no changes detected');
-    console.error('  --all      Process all sites in floorplans-data.json');
+    console.error('  --force           Rebuild even if no changes detected');
+    console.error('  --all             Process all sites in floorplans-data.json');
+    console.error('  --concurrency N   Number of parallel builds (default: 2)');
+    console.error('  -c N              Shorthand for --concurrency');
     process.exit(1);
   }
 
