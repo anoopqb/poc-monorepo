@@ -5,14 +5,30 @@
             "name": "Sunset Apartments",
             "basePath": "/property-001",
             "strapiEndpoint": "https://strapi.example.com/api/properties/001",
-            "floorplansEnabled": true
+            "floorplansEnabled": true,
+            "brand": {
+                "primaryColor": "#667eea",
+                "secondaryColor": "#764ba2",
+                "accentColor": "#f093fb",
+                "headerBg": "#ffffff",
+                "headerText": "#333333",
+                "fontFamily": "system-ui, -apple-system, sans-serif"
+            }
         },
         {
             "id": "property-002",
             "name": "Harbor View",
             "basePath": "/property-002",
             "strapiEndpoint": "https://strapi.example.com/api/properties/002",
-            "floorplansEnabled": true
+            "floorplansEnabled": true,
+            "brand": {
+                "primaryColor": "#0ea5e9",
+                "secondaryColor": "#0284c7",
+                "accentColor": "#38bdf8",
+                "headerBg": "#0f172a",
+                "headerText": "#ffffff",
+                "fontFamily": "'Segoe UI', Tahoma, sans-serif"
+            }
         }
     ]
 }

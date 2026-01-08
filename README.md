@@ -1,6 +1,6 @@
 # Micro-Sites Monorepo
 
-A scalable architecture for generating 500+ static micro-websites using Next.js 15, with two templates (website + floorplans) and incremental builds with change detection.
+A scalable architecture for generating 500+ static micro-websites using Next.js 15, with two templates (website + floorplans), incremental builds with change detection, and per-site branding.
 
 ## Architecture
 
@@ -8,23 +8,33 @@ A scalable architecture for generating 500+ static micro-websites using Next.js 
 ┌─────────────────────────────────────────────────────────────────┐
 │                    sites.config.json                             │
 │              (property-001, property-002, ...)                   │
+│              + brand tokens per site                             │
 └─────────────────────────────────────────────────────────────────┘
                               │
-         ┌────────────────────┴────────────────────┐
-         ▼                                         ▼
-┌─────────────────────┐                 ┌─────────────────────┐
-│  website-template   │                 │ floorplans-template │
-│  (marketing pages)  │                 │  (listings, units)  │
-└─────────────────────┘                 └─────────────────────┘
-         │                                         │
-         └────────────────────┬────────────────────┘
+         ┌────────────────────┼────────────────────┐
+         │                    │                    │
+         ▼                    ▼                    ▼
+┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+│ website-template│  │floorplans-templ │  │ data/themes/    │
+│ (marketing)     │  │ (listings)      │  │ (CSS overrides) │
+└─────────────────┘  └─────────────────┘  └─────────────────┘
+         │                    │                    │
+         └────────────────────┼────────────────────┘
+                              ▼
+                    ┌─────────────────┐
+                    │ @repo/shared    │
+                    │ (Header, utils) │
+                    └─────────────────┘
+                              │
                               ▼
                     ┌─────────────────┐
                     │   dist/         │
                     │   ├── property-001/
-                    │   │   ├── index.html
+                    │   │   ├── index.html (purple theme)
                     │   │   └── floorplans/
                     │   └── property-002/
+                    │       ├── index.html (blue theme)
+                    │       └── floorplans/
                     └─────────────────┘
 ```
 
@@ -33,41 +43,54 @@ A scalable architecture for generating 500+ static micro-websites using Next.js 
 ```
 micro-sites-monorepo/
 ├── packages/
-│   ├── website-template/           # Main property website
-│   │   ├── app/
-│   │   │   ├── page.tsx           # Homepage
-│   │   │   ├── layout.tsx
-│   │   │   └── globals.css
-│   │   ├── next.config.js         # Dynamic basePath from env
+│   ├── shared/                        # Shared components and styles
+│   │   ├── components/
+│   │   │   ├── Header.tsx            # Reusable header component
+│   │   │   └── index.ts
+│   │   ├── styles/
+│   │   │   ├── header.css            # Header styles (uses CSS variables)
+│   │   │   └── variables.css         # Default CSS variable values
 │   │   └── package.json
 │   │
-│   └── floorplans-template/        # Floorplans listing
+│   ├── website-template/              # Main property website
+│   │   ├── app/
+│   │   │   ├── page.tsx              # Homepage
+│   │   │   ├── layout.tsx            # Injects CSS variables
+│   │   │   ├── globals.css           # Uses CSS variables
+│   │   │   └── theme.css             # Replaced at build time
+│   │   ├── next.config.js            # Dynamic basePath + brand env
+│   │   └── package.json
+│   │
+│   └── floorplans-template/           # Floorplans listing
 │       ├── app/
-│       │   ├── page.tsx           # Floorplan cards
-│       │   ├── layout.tsx
-│       │   └── globals.css
+│       │   ├── page.tsx              # Floorplan cards
+│       │   ├── layout.tsx            # Injects CSS variables
+│       │   ├── globals.css           # Uses CSS variables
+│       │   └── theme.css             # Replaced at build time
 │       ├── next.config.js
 │       └── package.json
 │
 ├── scripts/
-│   ├── build-site.ts              # Build single site (website + floorplans)
-│   ├── build-all.ts               # Build all sites
-│   └── build-floorplans.ts        # Incremental floorplans build with change detection
+│   ├── build-site.ts                 # Build single site (website + floorplans)
+│   ├── build-all.ts                  # Build all sites
+│   └── build-floorplans.ts           # Incremental floorplans build
 │
 ├── data/
-│   ├── floorplans-data.json       # Floorplan data per site
-│   └── .build-cache.json          # Content hashes (auto-generated, gitignored)
+│   ├── floorplans-data.json          # Floorplan data per site
+│   ├── themes/                       # Per-site theme CSS overrides
+│   │   ├── _default.css              # Fallback (no overrides)
+│   │   ├── property-001.css          # Purple theme overrides
+│   │   └── property-002.css          # Blue theme overrides
+│   └── .build-cache.json             # Content hashes (gitignored)
 │
-├── dist/                          # Build output (gitignored)
+├── dist/                             # Build output (gitignored)
 │   ├── property-001/
 │   │   ├── index.html
 │   │   ├── _next/static/...
 │   │   └── floorplans/
-│   │       ├── index.html
-│   │       └── _next/static/...
 │   └── property-002/
 │
-├── sites.config.json              # Site configurations
+├── sites.config.json                 # Site configurations + branding
 ├── turbo.json
 └── package.json
 ```
@@ -129,7 +152,7 @@ npm run lint
 
 ### sites.config.json
 
-Define all sites to be generated:
+Define all sites to be generated with their branding:
 
 ```json
 {
@@ -139,11 +162,49 @@ Define all sites to be generated:
       "name": "Sunset Apartments",
       "basePath": "/property-001",
       "strapiEndpoint": "https://strapi.example.com/api/properties/001",
-      "floorplansEnabled": true
+      "floorplansEnabled": true,
+      "brand": {
+        "primaryColor": "#667eea",
+        "secondaryColor": "#764ba2",
+        "accentColor": "#f093fb",
+        "headerBg": "#ffffff",
+        "headerText": "#333333",
+        "fontFamily": "system-ui, -apple-system, sans-serif"
+      }
     }
   ]
 }
 ```
+
+### Brand Tokens
+
+| Token | CSS Variable | Description |
+|-------|--------------|-------------|
+| `primaryColor` | `--brand-primary` | Main brand color (buttons, links, accents) |
+| `secondaryColor` | `--brand-secondary` | Secondary color (gradients) |
+| `accentColor` | `--brand-accent` | Accent/highlight color |
+| `headerBg` | `--brand-header-bg` | Header background color |
+| `headerText` | `--brand-header-text` | Header text color |
+| `fontFamily` | `--brand-font-family` | Font family for the site |
+
+### data/themes/ (Per-Site CSS Overrides)
+
+For complex style overrides beyond color tokens, create a CSS file matching the site ID:
+
+```css
+/* data/themes/property-001.css */
+
+/* Custom card styling */
+.floorplan-card {
+  border-top: 3px solid var(--brand-primary);
+}
+
+.floorplan-card:hover {
+  border-top-color: var(--brand-accent);
+}
+```
+
+The build script copies the appropriate theme file to the template before building. If no site-specific theme exists, `_default.css` is used.
 
 ### data/floorplans-data.json
 
@@ -159,6 +220,53 @@ Floorplan data per site (can be updated hourly from Strapi):
   }
 }
 ```
+
+## Branding System
+
+The branding system combines two approaches:
+
+1. **CSS Variables from Config**: Brand tokens are injected as CSS custom properties on the `<html>` element at build time. Components use these variables for colors, fonts, etc.
+
+2. **Per-Site Theme CSS**: Complex style overrides (shadows, borders, layouts) are defined in `data/themes/{site-id}.css` and copied to the template before building.
+
+### How It Works
+
+```
+sites.config.json          →  layout.tsx injects CSS vars on <html>
+    brand: { ... }              style="--brand-primary:#667eea;..."
+
+data/themes/property-001.css  →  Copied to app/theme.css before build
+                                   Imported by globals.css
+```
+
+### Example: Two Different Themes
+
+| Feature | Property-001 (Sunset) | Property-002 (Harbor View) |
+|---------|----------------------|---------------------------|
+| Background | Purple gradient | Blue gradient |
+| Header | White, dark text | Dark blue, white text |
+| Card style | Top purple border | Left blue border |
+| Accent | Purple underlines | Blue with header line |
+
+## Shared Components
+
+The `@repo/shared` package provides reusable components:
+
+```tsx
+import { Header } from '@repo/shared/components';
+
+export default function Page() {
+  return (
+    <Header
+      siteName="Sunset Apartments"
+      floorplansUrl="/property-001/floorplans"
+      currentPage="home"
+    />
+  );
+}
+```
+
+The Header component automatically uses CSS variables for colors, so it adapts to each site's branding.
 
 ## Change Detection
 
@@ -211,6 +319,12 @@ Templates use these env vars (set automatically by build scripts):
 | `FLOORPLANS_DATA` | JSON string of floorplan data |
 | `FLOORPLANS_URL` | Link to floorplans section |
 | `WEBSITE_URL` | Link back to main website |
+| `BRAND_PRIMARY_COLOR` | Primary brand color |
+| `BRAND_SECONDARY_COLOR` | Secondary brand color |
+| `BRAND_ACCENT_COLOR` | Accent color |
+| `BRAND_HEADER_BG` | Header background color |
+| `BRAND_HEADER_TEXT` | Header text color |
+| `BRAND_FONT_FAMILY` | Font family |
 
 ## Workflow for Production
 
@@ -219,3 +333,10 @@ Templates use these env vars (set automatically by build scripts):
    - Fetch data from Strapi and update `data/floorplans-data.json`
    - Run `npm run build:floorplans:all` (only rebuilds changed sites)
 3. **Deploy**: Sync `dist/` folder to S3/CDN
+
+## Adding a New Site
+
+1. Add site configuration to `sites.config.json` with brand tokens
+2. Add floorplan data to `data/floorplans-data.json`
+3. (Optional) Create `data/themes/{site-id}.css` for custom style overrides
+4. Run `npm run build:site {site-id}`

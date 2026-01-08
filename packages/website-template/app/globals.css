@@ -1,4 +1,5 @@
 @import '@repo/shared/styles/header.css';
+@import './theme.css';
 
 * {
   box-sizing: border-box;
@@ -13,8 +14,8 @@ body {
 }
 
 body {
-  font-family: system-ui, -apple-system, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: var(--brand-font-family, system-ui, -apple-system, sans-serif);
+  background: linear-gradient(135deg, var(--brand-primary, #667eea) 0%, var(--brand-secondary, #764ba2) 100%);
   color: white;
   min-height: 100vh;
   display: flex;
@@ -45,7 +46,7 @@ p {
 .cta-link {
   display: inline-block;
   background: white;
-  color: #667eea;
+  color: var(--brand-primary, #667eea);
   padding: 1rem 2rem;
   border-radius: 8px;
   text-decoration: none;

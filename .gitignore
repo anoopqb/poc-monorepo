@@ -17,6 +17,9 @@ dist/
 # Build cache
 data/.build-cache.json
 
+# Theme files (generated at build time)
+packages/*/app/theme.css
+
 # Turbo
 .turbo
 

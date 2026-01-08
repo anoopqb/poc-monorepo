@@ -1,0 +1,27 @@
+/* Harbor View Theme - Ocean Blue with Dark Header */
+
+/* Custom button style - more rounded */
+.cta-link {
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+}
+
+.cta-link:hover {
+  box-shadow: 0 8px 25px rgba(14, 165, 233, 0.5);
+}
+
+/* Floorplan card - ocean style */
+.floorplan-card {
+  border-left: 4px solid var(--brand-primary);
+  border-radius: 0 12px 12px 0;
+}
+
+.floorplan-card:hover {
+  border-left-color: var(--brand-accent);
+}
+
+/* Header with bottom accent line */
+.site-header {
+  border-bottom: 2px solid var(--brand-primary);
+}
+

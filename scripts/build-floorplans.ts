@@ -1,12 +1,22 @@
 import { execSync } from 'child_process';
 import { join } from 'path';
-import { existsSync, mkdirSync, rmSync, cpSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, rmSync, cpSync, readFileSync, writeFileSync, copyFileSync } from 'fs';
 import crypto from 'crypto';
+
+interface BrandConfig {
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  headerBg: string;
+  headerText: string;
+  fontFamily: string;
+}
 
 interface SiteConfig {
   id: string;
   name: string;
   basePath: string;
+  brand?: BrandConfig;
 }
 
 interface FloorplanData {
@@ -33,6 +43,7 @@ const DIST_DIR = join(ROOT_DIR, 'dist');
 const DATA_DIR = join(ROOT_DIR, 'data');
 const DATA_FILE = join(DATA_DIR, 'floorplans-data.json');
 const CACHE_FILE = join(DATA_DIR, '.build-cache.json');
+const THEMES_DIR = join(ROOT_DIR, 'data/themes');
 
 // Generate hash of floorplan data for comparison
 function hashData(data: unknown): string {
@@ -78,6 +89,37 @@ function hasChanged(siteId: string, newData: FloorplanData, cache: BuildCache): 
 
   console.log(`   ✓ No changes for ${siteId} (hash: ${newHash.substring(0, 8)}...)`);
   return false;
+}
+
+// Copy site-specific theme CSS to template
+function copyThemeFile(siteId: string): void {
+  const siteTheme = join(THEMES_DIR, `${siteId}.css`);
+  const defaultTheme = join(THEMES_DIR, '_default.css');
+  const destPath = join(PACKAGES_DIR, 'floorplans-template', 'app/theme.css');
+
+  const sourceTheme = existsSync(siteTheme) ? siteTheme : defaultTheme;
+
+  if (existsSync(sourceTheme)) {
+    copyFileSync(sourceTheme, destPath);
+    console.log(`   📎 Theme: ${sourceTheme.replace(ROOT_DIR, '')}`);
+  } else {
+    writeFileSync(destPath, '/* No theme overrides */\n');
+    console.log(`   📎 Theme: (none)`);
+  }
+}
+
+// Get brand environment variables
+function getBrandEnv(brand?: BrandConfig): Record<string, string> {
+  if (!brand) return {};
+
+  return {
+    BRAND_PRIMARY_COLOR: brand.primaryColor,
+    BRAND_SECONDARY_COLOR: brand.secondaryColor,
+    BRAND_ACCENT_COLOR: brand.accentColor,
+    BRAND_HEADER_BG: brand.headerBg,
+    BRAND_HEADER_TEXT: brand.headerText,
+    BRAND_FONT_FAMILY: brand.fontFamily,
+  };
 }
 
 export async function buildFloorplans(siteId: string, force = false): Promise<boolean> {
@@ -126,6 +168,9 @@ export async function buildFloorplans(siteId: string, force = false): Promise<bo
     return false;
   }
 
+  // Copy theme file
+  copyThemeFile(siteId);
+
   // Build floorplans template
   const templateDir = join(PACKAGES_DIR, 'floorplans-template');
   const outDir = join(templateDir, 'out');
@@ -141,6 +186,7 @@ export async function buildFloorplans(siteId: string, force = false): Promise<bo
     SITE_NAME: site.name,
     SITE_BASE_PATH: site.basePath,
     FLOORPLANS_DATA: JSON.stringify(siteData.floorplans),
+    ...getBrandEnv(site.brand),
   };
 
   console.log(`📦 Building floorplans template...`);
@@ -220,4 +266,3 @@ if (require.main === module) {
     buildFloorplans(siteId, force);
   }
 }
-

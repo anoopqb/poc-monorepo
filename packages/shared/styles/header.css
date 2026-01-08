@@ -1,5 +1,5 @@
 .site-header {
-  background: white;
+  background: var(--brand-header-bg, white);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
@@ -18,13 +18,13 @@
 .header-logo {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #333;
+  color: var(--brand-header-text, #333);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .header-logo:hover {
-  color: #667eea;
+  color: var(--brand-primary, #667eea);
 }
 
 .header-nav {
@@ -33,12 +33,13 @@
 }
 
 .header-nav a {
-  color: #666;
+  color: var(--brand-header-text, #666);
   text-decoration: none;
   font-weight: 500;
   padding: 0.5rem 0;
   position: relative;
   transition: color 0.2s;
+  opacity: 0.8;
 }
 
 .header-nav a::after {
@@ -48,17 +49,17 @@
   left: 0;
   width: 0;
   height: 2px;
-  background: #667eea;
+  background: var(--brand-primary, #667eea);
   transition: width 0.2s;
 }
 
 .header-nav a:hover,
 .header-nav a.active {
-  color: #667eea;
+  color: var(--brand-primary, #667eea);
+  opacity: 1;
 }
 
 .header-nav a:hover::after,
 .header-nav a.active::after {
   width: 100%;
 }
-

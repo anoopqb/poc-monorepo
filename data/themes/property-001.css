@@ -1,0 +1,16 @@
+/* Sunset Apartments Theme - Purple Gradient */
+
+/* Custom button hover effect */
+.cta-link:hover {
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Floorplan card accent */
+.floorplan-card {
+  border-top: 3px solid var(--brand-primary);
+}
+
+.floorplan-card:hover {
+  border-top-color: var(--brand-accent);
+}
+

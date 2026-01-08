@@ -1,0 +1,17 @@
+/* Default CSS Variables */
+/* These are fallback values - actual values are injected via inline styles at build time */
+
+:root {
+  /* Brand Colors */
+  --brand-primary: #667eea;
+  --brand-secondary: #764ba2;
+  --brand-accent: #f093fb;
+  
+  /* Header */
+  --brand-header-bg: #ffffff;
+  --brand-header-text: #333333;
+  
+  /* Typography */
+  --brand-font-family: system-ui, -apple-system, sans-serif;
+}
+
