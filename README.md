@@ -73,7 +73,8 @@ micro-sites-monorepo/
 ├── scripts/
 │   ├── build-site.ts                 # Build single site (website + floorplans)
 │   ├── build-all.ts                  # Build all sites
-│   └── build-floorplans.ts           # Incremental floorplans build
+│   ├── build-floorplans.ts           # Incremental floorplans build
+│   └── watch-floorplans.ts           # File watcher for auto-builds
 │
 ├── data/
 │   ├── floorplans-data.json          # Floorplan data per site
@@ -127,6 +128,28 @@ npm run build:floorplans:all
 # Force rebuild even if no changes detected
 npm run build:floorplans property-001 -- --force
 ```
+
+### Watch Mode (Auto-Build on Changes)
+
+Automatically rebuild when `data/floorplans-data.json` changes:
+
+```bash
+# Watch with default 60-second polling interval
+npm run watch:floorplans
+
+# Watch with custom interval (in seconds)
+npm run watch:floorplans -- --interval 10    # every 10 seconds
+npm run watch:floorplans -- -i 30            # every 30 seconds
+
+# Or set via environment variable
+POLL_INTERVAL=120 npm run watch:floorplans   # every 2 minutes
+```
+
+The watcher:
+- Polls the floorplans JSON file at the specified interval
+- Detects changes using MD5 hash comparison
+- Triggers incremental build (only rebuilds changed sites)
+- Prevents concurrent builds
 
 ### Development
 

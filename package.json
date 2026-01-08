@@ -8,6 +8,7 @@
     "build:all": "ts-node scripts/build-all.ts",
     "build:floorplans": "ts-node scripts/build-floorplans.ts",
     "build:floorplans:all": "ts-node scripts/build-floorplans.ts --all",
+    "watch:floorplans": "ts-node scripts/watch-floorplans.ts",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "clean": "rm -rf dist && turbo run clean",
