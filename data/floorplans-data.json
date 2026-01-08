@@ -1,0 +1,19 @@
+{
+  "property-001": {
+    "floorplans": [
+      { "id": "fp-1", "name": "1 Bedroom Classic UPDATED", "beds": 1, "baths": 1, "sqft": 800 },
+      { "id": "fp-2", "name": "2 Bedroom Modern", "beds": 2, "baths": 2, "sqft": 1100 },
+      { "id": "fp-3", "name": "3 Bedroom Deluxe", "beds": 3, "baths": 2, "sqft": 1450 }
+    ],
+    "lastUpdated": "2026-01-08T12:00:00Z"
+  },
+  "property-002": {
+    "floorplans": [
+      { "id": "fp-1", "name": "Studio Loft", "beds": 0, "baths": 1, "sqft": 500 },
+      { "id": "fp-2", "name": "1 Bedroom Harbor", "beds": 1, "baths": 1, "sqft": 800 },
+      { "id": "fp-3", "name": "2 Bedroom Ocean View", "beds": 2, "baths": 2, "sqft": 1200 }
+    ],
+    "lastUpdated": "2026-01-08T12:00:00Z"
+  }
+}
+

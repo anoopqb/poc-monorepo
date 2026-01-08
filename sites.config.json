@@ -1,0 +1,18 @@
+{
+    "sites": [
+        {
+            "id": "property-001",
+            "name": "Sunset Apartments",
+            "basePath": "/property-001",
+            "strapiEndpoint": "https://strapi.example.com/api/properties/001",
+            "floorplansEnabled": true
+        },
+        {
+            "id": "property-002",
+            "name": "Harbor View",
+            "basePath": "/property-002",
+            "strapiEndpoint": "https://strapi.example.com/api/properties/002",
+            "floorplansEnabled": true
+        }
+    ]
+}

@@ -3,14 +3,13 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "out/**"]
-    },
-    "main-app#build": {
-      "dependsOn": ["main-app#copy-build"]
-    },
-    "copy-build": {
-      "dependsOn": ["small-app#build"],
-      "outputs": ["public/small-app/**"]
+      "outputs": [".next/**", "!.next/cache/**", "out/**"],
+      "env": [
+        "SITE_ID",
+        "SITE_NAME",
+        "SITE_BASE_PATH",
+        "STRAPI_API_URL"
+      ]
     },
     "dev": {
       "cache": false,
