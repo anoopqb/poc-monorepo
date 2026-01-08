@@ -29,6 +29,126 @@
                 "headerText": "#ffffff",
                 "fontFamily": "'Segoe UI', Tahoma, sans-serif"
             }
+        },
+        {
+            "id": "property-003",
+            "name": "The Greenwood",
+            "basePath": "/property-003",
+            "strapiEndpoint": "https://strapi.example.com/api/properties/003",
+            "floorplansEnabled": true,
+            "brand": {
+                "primaryColor": "#10b981",
+                "secondaryColor": "#059669",
+                "accentColor": "#34d399",
+                "headerBg": "#ffffff",
+                "headerText": "#1f2937",
+                "fontFamily": "'Georgia', serif"
+            }
+        },
+        {
+            "id": "property-004",
+            "name": "Crimson Heights",
+            "basePath": "/property-004",
+            "strapiEndpoint": "https://strapi.example.com/api/properties/004",
+            "floorplansEnabled": true,
+            "brand": {
+                "primaryColor": "#dc2626",
+                "secondaryColor": "#991b1b",
+                "accentColor": "#fca5a5",
+                "headerBg": "#1c1917",
+                "headerText": "#fafaf9",
+                "fontFamily": "'Playfair Display', Georgia, serif"
+            }
+        },
+        {
+            "id": "property-005",
+            "name": "Golden Gate Residences",
+            "basePath": "/property-005",
+            "strapiEndpoint": "https://strapi.example.com/api/properties/005",
+            "floorplansEnabled": true,
+            "brand": {
+                "primaryColor": "#f59e0b",
+                "secondaryColor": "#d97706",
+                "accentColor": "#fbbf24",
+                "headerBg": "#fffbeb",
+                "headerText": "#78350f",
+                "fontFamily": "'Poppins', sans-serif"
+            }
+        },
+        {
+            "id": "property-006",
+            "name": "Midnight Manor",
+            "basePath": "/property-006",
+            "strapiEndpoint": "https://strapi.example.com/api/properties/006",
+            "floorplansEnabled": true,
+            "brand": {
+                "primaryColor": "#8b5cf6",
+                "secondaryColor": "#6d28d9",
+                "accentColor": "#c4b5fd",
+                "headerBg": "#18181b",
+                "headerText": "#fafafa",
+                "fontFamily": "'Inter', system-ui, sans-serif"
+            }
+        },
+        {
+            "id": "property-007",
+            "name": "Coral Bay Living",
+            "basePath": "/property-007",
+            "strapiEndpoint": "https://strapi.example.com/api/properties/007",
+            "floorplansEnabled": true,
+            "brand": {
+                "primaryColor": "#f43f5e",
+                "secondaryColor": "#e11d48",
+                "accentColor": "#fda4af",
+                "headerBg": "#fff1f2",
+                "headerText": "#881337",
+                "fontFamily": "'Lato', sans-serif"
+            }
+        },
+        {
+            "id": "property-008",
+            "name": "Azure Towers",
+            "basePath": "/property-008",
+            "strapiEndpoint": "https://strapi.example.com/api/properties/008",
+            "floorplansEnabled": true,
+            "brand": {
+                "primaryColor": "#06b6d4",
+                "secondaryColor": "#0891b2",
+                "accentColor": "#22d3ee",
+                "headerBg": "#ecfeff",
+                "headerText": "#164e63",
+                "fontFamily": "'Roboto', sans-serif"
+            }
+        },
+        {
+            "id": "property-009",
+            "name": "Slate & Stone",
+            "basePath": "/property-009",
+            "strapiEndpoint": "https://strapi.example.com/api/properties/009",
+            "floorplansEnabled": true,
+            "brand": {
+                "primaryColor": "#64748b",
+                "secondaryColor": "#475569",
+                "accentColor": "#94a3b8",
+                "headerBg": "#f8fafc",
+                "headerText": "#0f172a",
+                "fontFamily": "'Montserrat', sans-serif"
+            }
+        },
+        {
+            "id": "property-010",
+            "name": "Evergreen Estates",
+            "basePath": "/property-010",
+            "strapiEndpoint": "https://strapi.example.com/api/properties/010",
+            "floorplansEnabled": true,
+            "brand": {
+                "primaryColor": "#84cc16",
+                "secondaryColor": "#65a30d",
+                "accentColor": "#a3e635",
+                "headerBg": "#1a2e05",
+                "headerText": "#ecfccb",
+                "fontFamily": "'Source Sans Pro', sans-serif"
+            }
         }
     ]
 }

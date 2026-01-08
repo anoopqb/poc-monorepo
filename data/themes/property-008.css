@@ -1,0 +1,33 @@
+/* Azure Towers Theme - Clean & Modern */
+
+/* Clean minimal button */
+.cta-link {
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.2);
+  border: 2px solid var(--brand-primary);
+  background: white;
+  color: var(--brand-primary);
+}
+
+.cta-link:hover {
+  background: var(--brand-primary);
+  color: white;
+  box-shadow: 0 4px 16px rgba(6, 182, 212, 0.4);
+}
+
+/* Modern card with top accent */
+.floorplan-card {
+  border-radius: 8px;
+  border-top: 3px solid var(--brand-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.floorplan-card:hover {
+  box-shadow: 0 10px 40px rgba(6, 182, 212, 0.15);
+}
+
+/* Subtle header shadow */
+.site-header {
+  box-shadow: 0 1px 3px rgba(6, 182, 212, 0.1);
+}
+

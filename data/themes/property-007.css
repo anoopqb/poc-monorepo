@@ -1,0 +1,25 @@
+/* Coral Bay Living Theme - Tropical & Vibrant */
+
+/* Playful rounded button */
+.cta-link {
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, #fb7185 100%);
+}
+
+.cta-link:hover {
+  box-shadow: 0 8px 25px rgba(244, 63, 94, 0.5);
+}
+
+/* Coral-inspired cards */
+.floorplan-card {
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, var(--brand-primary), var(--brand-accent)) border-box;
+}
+
+.floorplan-card:hover {
+  transform: translateY(-6px) rotate(1deg);
+}
+

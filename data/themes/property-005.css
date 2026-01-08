@@ -1,0 +1,25 @@
+/* Golden Gate Residences Theme - Warm & Welcoming */
+
+/* Sunny button style */
+.cta-link {
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
+  color: #78350f;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+}
+
+.cta-link:hover {
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.5);
+  transform: translateY(-3px);
+}
+
+/* Golden accent cards */
+.floorplan-card {
+  border-top: 4px solid var(--brand-primary);
+  background: linear-gradient(180deg, #fffbeb 0%, #ffffff 100%);
+}
+
+.floorplan-card:hover {
+  border-top-color: var(--brand-accent);
+}
+

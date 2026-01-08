@@ -1,0 +1,32 @@
+/* Crimson Heights Theme - Bold & Luxurious */
+
+/* Elegant button styling */
+.cta-link {
+  border-radius: 0;
+  border: 2px solid white;
+  box-shadow: none;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.cta-link:hover {
+  background: transparent;
+  color: white;
+  box-shadow: inset 0 0 0 2px white;
+}
+
+/* Premium card styling */
+.floorplan-card {
+  border: 1px solid #e5e5e5;
+  border-left: 4px solid var(--brand-primary);
+}
+
+.floorplan-card:hover {
+  border-color: var(--brand-primary);
+}
+
+/* Dark header accent */
+.site-header {
+  border-bottom: 3px solid var(--brand-primary);
+}
+

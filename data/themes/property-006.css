@@ -1,0 +1,47 @@
+/* Midnight Manor Theme - Dark & Sophisticated */
+
+/* Glowing button */
+.cta-link {
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.cta-link:hover {
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+}
+
+/* Card with subtle glow */
+.floorplan-card {
+  background: #27272a;
+  color: #fafafa;
+  border: 1px solid #3f3f46;
+}
+
+.floorplan-card:hover {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+.floorplan-card h2 {
+  color: var(--brand-accent);
+}
+
+.floorplan-details span {
+  background: #3f3f46;
+  color: #a1a1aa;
+}
+
+/* Dark page background for floorplans */
+main {
+  background: #18181b;
+}
+
+main > h1 {
+  color: #fafafa;
+}
+
+main > p {
+  color: #a1a1aa;
+}
+

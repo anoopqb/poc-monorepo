@@ -1,0 +1,30 @@
+/* Evergreen Estates Theme - Natural & Earthy */
+
+/* Organic button style */
+.cta-link {
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(132, 204, 22, 0.3);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
+  color: #1a2e05;
+}
+
+.cta-link:hover {
+  box-shadow: 0 8px 25px rgba(132, 204, 22, 0.5);
+}
+
+/* Nature-inspired cards */
+.floorplan-card {
+  border-radius: 16px;
+  border-left: 5px solid var(--brand-primary);
+  background: linear-gradient(90deg, #f7fee7 0%, #ffffff 20%);
+}
+
+.floorplan-card:hover {
+  border-left-color: var(--brand-accent);
+}
+
+/* Forest header accent */
+.site-header {
+  border-bottom: 2px solid var(--brand-primary);
+}
+

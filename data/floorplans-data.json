@@ -1,7 +1,7 @@
 {
   "property-001": {
     "floorplans": [
-      { "id": "fp-1", "name": "1 Bedroom Classic UPDATED", "beds": 1, "baths": 1, "sqft": 800 },
+      { "id": "fp-1", "name": "1 Bedroom Classic", "beds": 1, "baths": 1, "sqft": 800 },
       { "id": "fp-2", "name": "2 Bedroom Modern", "beds": 2, "baths": 2, "sqft": 1100 },
       { "id": "fp-3", "name": "3 Bedroom Deluxe", "beds": 3, "baths": 2, "sqft": 1450 }
     ],
@@ -14,6 +14,76 @@
       { "id": "fp-3", "name": "2 Bedroom Ocean View", "beds": 2, "baths": 2, "sqft": 1200 }
     ],
     "lastUpdated": "2026-01-08T12:00:00Z"
+  },
+  "property-003": {
+    "floorplans": [
+      { "id": "fp-1", "name": "Garden Studio", "beds": 0, "baths": 1, "sqft": 550 },
+      { "id": "fp-2", "name": "1 Bedroom Garden", "beds": 1, "baths": 1, "sqft": 750 },
+      { "id": "fp-3", "name": "2 Bedroom Forest", "beds": 2, "baths": 2, "sqft": 1050 },
+      { "id": "fp-4", "name": "3 Bedroom Treehouse", "beds": 3, "baths": 2, "sqft": 1400 }
+    ],
+    "lastUpdated": "2026-01-08T12:00:00Z"
+  },
+  "property-004": {
+    "floorplans": [
+      { "id": "fp-1", "name": "Executive Studio", "beds": 0, "baths": 1, "sqft": 600 },
+      { "id": "fp-2", "name": "1 Bedroom Premier", "beds": 1, "baths": 1, "sqft": 850 },
+      { "id": "fp-3", "name": "2 Bedroom Luxury", "beds": 2, "baths": 2, "sqft": 1250 }
+    ],
+    "lastUpdated": "2026-01-08T12:00:00Z"
+  },
+  "property-005": {
+    "floorplans": [
+      { "id": "fp-1", "name": "Golden Studio", "beds": 0, "baths": 1, "sqft": 520 },
+      { "id": "fp-2", "name": "1 Bedroom Sunset", "beds": 1, "baths": 1, "sqft": 780 },
+      { "id": "fp-3", "name": "2 Bedroom Bridge View", "beds": 2, "baths": 2, "sqft": 1150 },
+      { "id": "fp-4", "name": "3 Bedroom Panorama", "beds": 3, "baths": 2, "sqft": 1500 },
+      { "id": "fp-5", "name": "Penthouse Suite", "beds": 4, "baths": 3, "sqft": 2200 }
+    ],
+    "lastUpdated": "2026-01-08T12:00:00Z"
+  },
+  "property-006": {
+    "floorplans": [
+      { "id": "fp-1", "name": "Midnight Studio", "beds": 0, "baths": 1, "sqft": 580 },
+      { "id": "fp-2", "name": "1 Bedroom Eclipse", "beds": 1, "baths": 1, "sqft": 820 },
+      { "id": "fp-3", "name": "2 Bedroom Twilight", "beds": 2, "baths": 2, "sqft": 1180 }
+    ],
+    "lastUpdated": "2026-01-08T12:00:00Z"
+  },
+  "property-007": {
+    "floorplans": [
+      { "id": "fp-1", "name": "Coral Studio", "beds": 0, "baths": 1, "sqft": 490 },
+      { "id": "fp-2", "name": "1 Bedroom Reef", "beds": 1, "baths": 1, "sqft": 720 },
+      { "id": "fp-3", "name": "2 Bedroom Lagoon", "beds": 2, "baths": 2, "sqft": 1080 },
+      { "id": "fp-4", "name": "3 Bedroom Beachfront", "beds": 3, "baths": 2, "sqft": 1380 }
+    ],
+    "lastUpdated": "2026-01-08T12:00:00Z"
+  },
+  "property-008": {
+    "floorplans": [
+      { "id": "fp-1", "name": "Azure Studio", "beds": 0, "baths": 1, "sqft": 560 },
+      { "id": "fp-2", "name": "1 Bedroom Sky", "beds": 1, "baths": 1, "sqft": 790 },
+      { "id": "fp-3", "name": "2 Bedroom Cloud", "beds": 2, "baths": 2, "sqft": 1120 },
+      { "id": "fp-4", "name": "3 Bedroom Horizon", "beds": 3, "baths": 3, "sqft": 1550 }
+    ],
+    "lastUpdated": "2026-01-08T12:00:00Z"
+  },
+  "property-009": {
+    "floorplans": [
+      { "id": "fp-1", "name": "Slate Studio", "beds": 0, "baths": 1, "sqft": 540 },
+      { "id": "fp-2", "name": "1 Bedroom Stone", "beds": 1, "baths": 1, "sqft": 770 },
+      { "id": "fp-3", "name": "2 Bedroom Granite", "beds": 2, "baths": 2, "sqft": 1100 }
+    ],
+    "lastUpdated": "2026-01-08T12:00:00Z"
+  },
+  "property-010": {
+    "floorplans": [
+      { "id": "fp-1", "name": "Pine Studio", "beds": 0, "baths": 1, "sqft": 510 },
+      { "id": "fp-2", "name": "1 Bedroom Oak", "beds": 1, "baths": 1, "sqft": 740 },
+      { "id": "fp-3", "name": "2 Bedroom Maple", "beds": 2, "baths": 2, "sqft": 1060 },
+      { "id": "fp-4", "name": "3 Bedroom Redwood", "beds": 3, "baths": 2, "sqft": 1420 },
+      { "id": "fp-5", "name": "4 Bedroom Estate", "beds": 4, "baths": 3, "sqft": 1950 }
+    ],
+    "lastUpdated": "2026-01-08T12:00:00Z"
   }
 }
-
