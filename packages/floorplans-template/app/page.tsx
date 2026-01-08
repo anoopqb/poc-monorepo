@@ -1,3 +1,5 @@
+import { Header } from '@repo/shared/components';
+
 interface Floorplan {
   id: string;
   name: string;
@@ -30,29 +32,34 @@ function getFloorplans(): Floorplan[] {
 export default function FloorplansPage() {
   const siteName = process.env.SITE_NAME || 'Property';
   const websiteUrl = process.env.WEBSITE_URL || '/';
+  const basePath = process.env.SITE_BASE_PATH || '';
   const floorplans = getFloorplans();
 
   return (
-    <main>
-      <nav className="breadcrumb">
-        <a href={websiteUrl}>← Back to {siteName}</a>
-      </nav>
+    <>
+      <Header
+        siteName={siteName}
+        websiteUrl={websiteUrl}
+        floorplansUrl={basePath ? `${basePath}/floorplans` : '/floorplans'}
+        currentPage="floorplans"
+      />
+      <main>
+        <h1>Available Floorplans</h1>
+        <p>Choose from our selection of thoughtfully designed floor plans.</p>
 
-      <h1>Available Floorplans</h1>
-      <p>Choose from our selection of thoughtfully designed floor plans.</p>
-
-      <div className="floorplans-grid">
-        {floorplans.map((fp) => (
-          <div key={fp.id} className="floorplan-card">
-            <h2>{fp.name}</h2>
-            <div className="floorplan-details">
-              <span>{fp.beds} Bed</span>
-              <span>{fp.baths} Bath</span>
-              <span>{fp.sqft} sq ft</span>
+        <div className="floorplans-grid">
+          {floorplans.map((fp) => (
+            <div key={fp.id} className="floorplan-card">
+              <h2>{fp.name}</h2>
+              <div className="floorplan-details">
+                <span>{fp.beds} Bed</span>
+                <span>{fp.baths} Bath</span>
+                <span>{fp.sqft} sq ft</span>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-    </main>
+          ))}
+        </div>
+      </main>
+    </>
   );
 }
