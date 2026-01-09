@@ -4,7 +4,7 @@ interface HeaderProps {
   siteName: string;
   websiteUrl?: string;
   floorplansUrl?: string;
-  currentPage?: 'home' | 'floorplans';
+  currentPage?: 'home' | 'floorplans' | 'amenities';
 }
 
 export function Header({
@@ -25,6 +25,12 @@ export function Header({
             className={currentPage === 'home' ? 'active' : ''}
           >
             Home
+          </a>
+          <a
+            href={websiteUrl + '/amenities'}
+            className={currentPage === 'amenities' ? 'active' : ''}
+          >
+            Amenities
           </a>
           {floorplansUrl && (
             <a

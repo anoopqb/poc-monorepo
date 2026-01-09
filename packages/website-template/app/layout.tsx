@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { Header } from '@repo/shared/components';
 
 export const metadata: Metadata = {
   title: process.env.SITE_NAME || 'Property Website',
@@ -18,6 +19,10 @@ function getBrandStyles(): React.CSSProperties {
   } as React.CSSProperties;
 }
 
+const siteName = process.env.SITE_NAME || 'Property Website';
+const floorplansUrl = process.env.FLOORPLANS_URL || '/floorplans';
+const basePath = process.env.SITE_BASE_PATH || 'http://localhost:3002';
+
 export default function RootLayout({
   children,
 }: {
@@ -25,7 +30,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" style={getBrandStyles()}>
-      <body>{children}</body>
+
+      <body>
+        <Header siteName={siteName} floorplansUrl={floorplansUrl} websiteUrl={basePath || '/'} />
+        {children}
+      </body>
     </html>
   );
 }
