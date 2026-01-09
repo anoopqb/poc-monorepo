@@ -1,11 +1,14 @@
 /** @type {import('next').NextConfig} */
 const siteBasePath = process.env.SITE_BASE_PATH || '';
-const basePath = siteBasePath ? `${siteBasePath}/floorplans` : '/floorplans';
+// In development mode (when SITE_BASE_PATH is not set), don't use basePath
+// In production builds, use the configured basePath
+const isDev = process.env.NODE_ENV !== 'production' && !siteBasePath;
+const basePath = isDev ? '' : (siteBasePath ? `${siteBasePath}/floorplans` : '/floorplans');
 
 const nextConfig = {
   output: 'export',
   basePath: basePath,
-  assetPrefix: `${basePath}/`,
+  assetPrefix: basePath ? `${basePath}/` : undefined,
   reactStrictMode: true,
   images: {
     unoptimized: true,
