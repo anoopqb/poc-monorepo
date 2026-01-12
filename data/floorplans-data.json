@@ -2,7 +2,7 @@
   "property-001": {
     "floorplans": [
       {
-        "id": "fp-1",
+        "id": "4389894",
         "name": "1 Bedroom Classic",
         "beds": 1,
         "baths": 1,
@@ -11,7 +11,7 @@
         "availableDate": null
       },
       {
-        "id": "fp-2",
+        "id": "4389902",
         "name": "2 Bedroom Modern",
         "beds": 2,
         "baths": 2,
@@ -20,7 +20,7 @@
         "availableDate": "2026-02-15"
       },
       {
-        "id": "fp-3",
+        "id": "4389896",
         "name": "3 Bedroom Deluxe",
         "beds": 3,
         "baths": 2,
@@ -34,7 +34,7 @@
   "property-002": {
     "floorplans": [
       {
-        "id": "fp-1",
+        "id": "4389897",
         "name": "Studio Loft",
         "beds": 0,
         "baths": 1,
@@ -43,7 +43,7 @@
         "availableDate": null
       },
       {
-        "id": "fp-2",
+        "id": "4389898",
         "name": "1 Bedroom Harbor",
         "beds": 1,
         "baths": 1,
@@ -52,7 +52,7 @@
         "availableDate": null
       },
       {
-        "id": "fp-3",
+        "id": "4389900",
         "name": "2 Bedroom Ocean View",
         "beds": 2,
         "baths": 2,
@@ -66,7 +66,7 @@
   "property-003": {
     "floorplans": [
       {
-        "id": "fp-1",
+        "id": "4389901",
         "name": "Garden Studio",
         "beds": 0,
         "baths": 1,
@@ -75,7 +75,7 @@
         "availableDate": null
       },
       {
-        "id": "fp-2",
+        "id": "4389905",
         "name": "1 Bedroom Garden",
         "beds": 1,
         "baths": 1,
@@ -84,7 +84,7 @@
         "availableDate": "2026-01-20"
       },
       {
-        "id": "fp-3",
+        "id": "4389914",
         "name": "2 Bedroom Forest",
         "beds": 2,
         "baths": 2,
@@ -93,7 +93,7 @@
         "availableDate": null
       },
       {
-        "id": "fp-4",
+        "id": "4389915",
         "name": "3 Bedroom Treehouse",
         "beds": 3,
         "baths": 2,
@@ -107,7 +107,7 @@
   "property-004": {
     "floorplans": [
       {
-        "id": "fp-1",
+        "id": "4389906",
         "name": "Executive Studio",
         "beds": 0,
         "baths": 1,
@@ -116,7 +116,7 @@
         "availableDate": null
       },
       {
-        "id": "fp-2",
+        "id": "4389912",
         "name": "1 Bedroom Premier",
         "beds": 1,
         "baths": 1,
@@ -125,7 +125,7 @@
         "availableDate": "2026-02-10"
       },
       {
-        "id": "fp-3",
+        "id": "4389916",
         "name": "2 Bedroom Luxury",
         "beds": 2,
         "baths": 2,
@@ -139,7 +139,7 @@
   "property-005": {
     "floorplans": [
       {
-        "id": "fp-1",
+        "id": "4389907",
         "name": "Golden Studio",
         "beds": 0,
         "baths": 1,
@@ -148,7 +148,7 @@
         "availableDate": null
       },
       {
-        "id": "fp-2",
+        "id": "4389908",
         "name": "1 Bedroom Sunset",
         "beds": 1,
         "baths": 1,
@@ -157,7 +157,7 @@
         "availableDate": "2026-01-25"
       },
       {
-        "id": "fp-3",
+        "id": "4389909",
         "name": "2 Bedroom Bridge View",
         "beds": 2,
         "baths": 2,
@@ -166,7 +166,7 @@
         "availableDate": null
       },
       {
-        "id": "fp-4",
+        "id": "4389910",
         "name": "3 Bedroom Panorama",
         "beds": 3,
         "baths": 2,
@@ -175,7 +175,7 @@
         "availableDate": "2026-03-15"
       },
       {
-        "id": "fp-5",
+        "id": "4389911",
         "name": "Penthouse Suite",
         "beds": 4,
         "baths": 3,
@@ -189,7 +189,7 @@
   "property-006": {
     "floorplans": [
       {
-        "id": "fp-1",
+        "id": "4389919",
         "name": "Midnight Studio",
         "beds": 0,
         "baths": 1,
@@ -198,7 +198,7 @@
         "availableDate": null
       },
       {
-        "id": "fp-2",
+        "id": "4389922",
         "name": "1 Bedroom Eclipse",
         "beds": 1,
         "baths": 1,
@@ -207,7 +207,7 @@
         "availableDate": null
       },
       {
-        "id": "fp-3",
+        "id": "4389923",
         "name": "2 Bedroom Twilight",
         "beds": 2,
         "baths": 2,
