@@ -6,7 +6,7 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 22
+      nodejs: 20
     commands:
       - echo "Installing dependencies"
       - node -v
@@ -15,16 +15,18 @@ phases:
 
   pre_build:
     commands:
-      - echo "BUILD_MODE=$BUILD_MODE"
+      - echo "BUILD_MODE=${BUILD_MODE:-all}"
       - echo "SITE_ID=$SITE_ID"
-      - echo "CONCURRENCY=$CONCURRENCY"
+      - echo "CONCURRENCY=${CONCURRENCY:-2}"
 
   build:
     commands:
       - |
+        set -e
+
         if [ "$BUILD_MODE" = "single" ] && [ -n "$SITE_ID" ]; then
           echo "▶ Building single site: $SITE_ID"
-          npm run build:site $SITE_ID
+          npm run build:site -- $SITE_ID
 
         elif [ "$BUILD_MODE" = "floorplans" ]; then
           echo "▶ Building floorplans only (incremental)"
