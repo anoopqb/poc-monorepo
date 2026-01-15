@@ -35,6 +35,7 @@ phases:
         else
           echo "▶ Building ALL sites"
           npm run build:all -- --concurrency ${CONCURRENCY:-2}
+        fi  
 
   post_build:
     commands:
