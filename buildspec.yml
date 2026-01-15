@@ -53,3 +53,4 @@ phases:
             --distribution-id $CLOUDFRONT_DIST_ID \
             --paths "/*"
         fi
+#pipeline
