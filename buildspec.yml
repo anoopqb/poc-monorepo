@@ -39,6 +39,9 @@ phases:
 
   post_build:
     commands:
+      - echo "S3_BUCKET=$S3_BUCKET"
+      - echo "CLOUDFRONT_DIST_ID=$CLOUDFRONT_DIST_ID"
+
       - echo "▶ Syncing dist/ to S3"
       - aws s3 sync dist/ s3://$S3_BUCKET/ --delete
 
