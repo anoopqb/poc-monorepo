@@ -59,7 +59,7 @@ async function fetchUnitsHtml(
 
   try {
     const response = await fetch(unitsUrl, {
-      cache: "no-store", // Always fetch fresh data
+      cache: "force-cache", // Always fetch fresh data
     });
 
     if (!response.ok) {

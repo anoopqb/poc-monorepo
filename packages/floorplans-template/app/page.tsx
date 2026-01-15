@@ -85,9 +85,8 @@ export default function FloorplansPage() {
 
   // Construct units URL - use dynamic route
   const getUnitsUrl = (floorplanId: string) => {
-    return basePath
-      ? `${basePath}/floor-plans/apartments/${floorplanId}`
-      : `/floor-plans/apartments/${floorplanId}`;
+    const fullBasePath = basePath ? `${basePath}/floorplans` : '/floorplans';
+    return `${fullBasePath}/apartments/${floorplanId}`;
   };
 
   return (
@@ -116,9 +115,8 @@ export default function FloorplansPage() {
                   <span>{fp.sqft} sq ft</span>
                 </div>
                 <div
-                  className={`floorplan-availability ${
-                    availability.isNow ? "available-now" : "available-later"
-                  }`}
+                  className={`floorplan-availability ${availability.isNow ? "available-now" : "available-later"
+                    }`}
                 >
                   <span className="availability-dot">●</span>
                   {availability.text}
