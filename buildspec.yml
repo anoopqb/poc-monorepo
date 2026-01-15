@@ -18,3 +18,37 @@ phases:
       - echo "BUILD_MODE=${BUILD_MODE:-all}"
       - echo "SITE_ID=$SITE_ID"
       - echo "CONCURRENCY=${CONCURRENCY:-2}"
+
+  build:
+    commands:
+      - |
+        set -e
+
+        if [ "$BUILD_MODE" = "single" ] && [ -n "$SITE_ID" ]; then
+          echo "▶ Building single site: $SITE_ID"
+          npm run build:site -- $SITE_ID
+
+        elif [ "$BUILD_MODE" = "floorplans" ]; then
+          echo "▶ Building floorplans only (incremental)"
+          npm run build:floorplans:all -- --concurrency ${CONCURRENCY:-2}
+
+        else
+          echo "▶ Building ALL sites"
+          npm run build:all -- --concurrency ${CONCURRENCY:-2}
+
+  post_build:
+    commands:
+      - echo "▶ Syncing dist/ to S3"
+      - aws s3 sync dist/ s3://$S3_BUCKET/ --delete
+
+      - echo "▶ Invalidating CloudFront"
+      - |
+        if [ "$BUILD_MODE" = "single" ] && [ -n "$SITE_ID" ]; then
+          aws cloudfront create-invalidation \
+            --distribution-id $CLOUDFRONT_DIST_ID \
+            --paths "/$SITE_ID/*"
+        else
+          aws cloudfront create-invalidation \
+            --distribution-id $CLOUDFRONT_DIST_ID \
+            --paths "/*"
+        fi
