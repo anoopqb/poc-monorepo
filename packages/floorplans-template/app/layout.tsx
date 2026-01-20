@@ -4,6 +4,9 @@ import './globals.css';
 export const metadata: Metadata = {
   title: `Floorplans | ${process.env.SITE_NAME || 'Property'}`,
   description: `View available floorplans at ${process.env.SITE_NAME || 'our property'}`,
+  other: {
+    'units-site-id': process.env.UNITS_SITE_ID || 'p1526057',
+  },
 };
 
 // Inject brand CSS variables as inline styles
@@ -23,9 +26,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const unitsSiteId = process.env.UNITS_SITE_ID || "p1526057";
+  
   return (
     <html lang="en" style={getBrandStyles()}>
-      <body>{children}</body>
+      <head>
+        <meta name="units-site-id" content={unitsSiteId} />
+      </head>
+      <body data-units-site-id={unitsSiteId}>{children}</body>
     </html>
   );
 }

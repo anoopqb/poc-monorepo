@@ -1,5 +1,5 @@
-@import '@repo/shared/styles/header.css';
-@import './theme.css';
+@import "@repo/shared/styles/header.css";
+@import "./theme.css";
 
 * {
   box-sizing: border-box;
