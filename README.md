@@ -392,3 +392,74 @@ Templates use these env vars (set automatically by build scripts):
 2. Add floorplan data to `data/floorplans-data.json`
 3. (Optional) Create `data/themes/{site-id}.css` for custom style overrides
 4. Run `npm run build:site {site-id}`
+
+## Infrastructure Diagram
+
+```text
+┌──────────────────────┐
+│      Developers      │
+│ (Code / Manual Ops)  │
+└─────────┬────────────┘
+          │
+┌─────────┼───────────────────────────────────────────────┐
+│         │                       │                        │
+│         │                       │                        │
+▼         ▼                       ▼                        ▼
+┌──────────────────────┐  ┌──────────────────────┐  ┌──────────────────────┐
+│  Manual / Pull Flow  │  │   Auto / Push Flow   │  │  Floorplan Pipeline  │
+│ (Release / Override) │  │ (On Code Commit)     │  │ (Scheduled / Event)  │
+└─────────┬────────────┘  └─────────┬────────────┘  └─────────┬────────────┘
+          │                           │                           │
+          ▼                           ▼                           ▼
+┌──────────────────────┐  ┌──────────────────────┐  ┌────────────────────────┐
+│   AWS CodePipeline   │  │   AWS CodePipeline   │  │     EventBridge Rule   │
+│  (Manual Trigger)    │  │  (GitHub Trigger)    │  │  (Hourly / Custom)    │
+└─────────┬────────────┘  └─────────┬────────────┘  └─────────┬────────────┘
+          │                           │                           │
+          ▼                           ▼                           ▼
+┌──────────────────────┐  ┌──────────────────────┐  ┌────────────────────────┐
+│  Source: GitHub ZIP  │  │  Source: GitHub ZIP  │  │   CodeBuild (Direct)   │
+│ (Pipeline Artifact)  │  │ (Auto Triggered)     │  │  (No Pipeline)        │
+└─────────┬────────────┘  └─────────┬────────────┘  └─────────┬────────────┘
+          │                           │                           │
+          └───────────────┬───────────┴───────────┬─────────────┘
+                          ▼                       ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                AWS CodeBuild                                  │
+│------------------------------------------------------------------------------│
+│ install:                                                                      │
+│   - nodejs 20                                                                 │
+│   - npm ci                                                                    │
+│                                                                              │
+│ pre_build:                                                                    │
+│   - Read ENV vars (BUILD_MODE / SITE_ID / FORCE / CONCURRENCY)                │
+│   - Defaults + Validation                                                     │
+│                                                                              │
+│ build:                                                                        │
+│   - Full site / Incremental / Floorplan build                                 │
+│   - Change detection                                                          │
+│   - FORCE override                                                            │
+│                                                                              │
+│ post_build:                                                                   │
+│   - Sync artifacts to S3                                                      │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌──────────────────────────┐
+│        Amazon S3          │
+│  (Static Site Bucket)    │
+└──────────┬───────────────┘
+           │
+           ▼
+┌──────────────────────────┐
+│      CloudFront CDN      │
+│  (Cache + Invalidation)  │
+└──────────┬───────────────┘
+           │
+           ▼
+┌──────────────────────────┐
+│        End Users         │
+│   (Web / Mobile / SEO)  │
+└──────────────────────────┘
+```
