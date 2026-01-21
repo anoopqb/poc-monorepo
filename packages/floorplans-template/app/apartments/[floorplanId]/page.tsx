@@ -17,20 +17,24 @@ function getAllFloorplanIds(): string[] {
   if (data) {
     try {
       const parsed = JSON.parse(data);
-      const ids: string[] = [];
+      const ids = new Set<string>();
 
-      // Iterate through all properties and collect floorplan IDs
-      Object.values(parsed).forEach((property: any) => {
-        if (property.floorplans && Array.isArray(property.floorplans)) {
-          property.floorplans.forEach((fp: Floorplan) => {
-            if (fp.id && !ids.includes(fp.id)) {
-              ids.push(fp.id);
-            }
-          });
-        }
-      });
+      if (Array.isArray(parsed)) {
+        parsed.forEach((fp: Floorplan) => {
+          if (fp?.id) ids.add(String(fp.id));
+        });
+      } else if (parsed && typeof parsed === "object") {
+        // Support full data shape keyed by site ID
+        Object.values(parsed).forEach((property: any) => {
+          if (property?.floorplans && Array.isArray(property.floorplans)) {
+            property.floorplans.forEach((fp: Floorplan) => {
+              if (fp?.id) ids.add(String(fp.id));
+            });
+          }
+        });
+      }
 
-      return ids;
+      return Array.from(ids);
     } catch {
       console.warn("Failed to parse FLOORPLANS_DATA");
     }
@@ -41,6 +45,8 @@ function getAllFloorplanIds(): string[] {
 }
 
 // Generate static params for all floorplan IDs
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const floorplanIds = getAllFloorplanIds();
 
