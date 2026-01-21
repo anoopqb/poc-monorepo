@@ -117,6 +117,10 @@ npm run build:all
 npm run build:all -- --concurrency 4
 npm run build:all -- -c 4
 
+# Build a subset of sites (eg p-1, p-4, p-5)
+npm run build:all -- --sites property-001,property-002
+npm run build:all -- --site property-001 --site property-002
+
 # Or set via environment variable
 CONCURRENCY=4 npm run build:all
 ```
