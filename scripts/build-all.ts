@@ -16,6 +16,33 @@ const DEFAULT_CONCURRENCY = 2;
 const ROOT_DIR = join(__dirname, '..');
 const TEMP_DIR = join(ROOT_DIR, '.build-temp');
 
+function parseSiteFilters(): string[] | null {
+  const args = process.argv.slice(2);
+  const siteIds: string[] = [];
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+
+    if (arg === '--site' || arg === '--sites' || arg === '-s') {
+      const value = args[i + 1];
+      if (value && !value.startsWith('-')) {
+        siteIds.push(...value.split(',').map((id) => id.trim()).filter(Boolean));
+        i++;
+      }
+      continue;
+    }
+
+    if (arg.startsWith('--site=') || arg.startsWith('--sites=')) {
+      const value = arg.split('=')[1] || '';
+      siteIds.push(...value.split(',').map((id) => id.trim()).filter(Boolean));
+    }
+  }
+
+  if (siteIds.length === 0) return null;
+
+  return Array.from(new Set(siteIds));
+}
+
 function getConcurrency(): number {
   const args = process.argv.slice(2);
 
@@ -80,10 +107,28 @@ async function buildAllSites(): Promise<void> {
   const sitesConfig = require('../sites.config.json');
   const sites: SiteConfig[] = sitesConfig.sites;
   const concurrency = getConcurrency();
+  const siteFilter = parseSiteFilters();
+  const targetSites = siteFilter
+    ? sites.filter((site) => siteFilter.includes(site.id))
+    : sites;
+
+  if (siteFilter) {
+    const missing = siteFilter.filter((siteId) => !sites.some((site) => site.id === siteId));
+    if (missing.length > 0) {
+      console.error(`❌ Unknown site id(s): ${missing.join(', ')}`);
+      console.error(
+        `   Available sites: ${sites.map((site) => site.id).join(', ')}`
+      );
+      process.exit(1);
+    }
+  }
 
   console.log(`\n${'='.repeat(60)}`);
-  console.log(`🚀 PARALLEL BUILD: ${sites.length} sites`);
+  console.log(`🚀 PARALLEL BUILD: ${targetSites.length} sites`);
   console.log(`   Concurrency: ${concurrency} parallel builds`);
+  if (siteFilter) {
+    console.log(`   Filter: ${siteFilter.join(', ')}`);
+  }
   console.log(`${'='.repeat(60)}`);
 
   // Clean temp directory before starting
@@ -94,7 +139,7 @@ async function buildAllSites(): Promise<void> {
 
   const startTime = Date.now();
 
-  const { succeeded, failed } = await processBatches(sites, concurrency, async (site) => {
+  const { succeeded, failed } = await processBatches(targetSites, concurrency, async (site) => {
     await buildSite(site);
   });
 
